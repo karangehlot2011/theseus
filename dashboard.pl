@@ -6,6 +6,9 @@ no warnings 'uninitialized';
 
 use Athena::Lib qw/:athena :intranet/;
 use AthenaUtils;
+use Hydra::Schedule;
+use Data::Dumper;
+use AthenaDate;
 
 
 my $html = qq{
@@ -24,7 +27,7 @@ my $html = qq{
 	            	font-family: Century Gothic;
 	            	width: 90%;
 	            	border-collapse: collapse;
-	            	border-spacing: 1px;
+	            	border-spacing: 10px;
 	            }
 
 	            .showtable table,th,td {
@@ -88,21 +91,49 @@ my $html = qq{
 			<div align='center' id='result'>
 				<button type='button'>Click Me!</button>
 			</div>
+			<br>
 			<div class='showtable' align='center'>
 				<table class='showtable'>
-					<tr>
-						<th>Test</th>
-						<th> Long test</th>
-					</tr>
-					<tr>
-						<td>This is </td>
-						<td> again a long test</td>
-					</tr>
-				</table>
-			</div>
-		</body>
-	</html>
 };
 
+my $dbh = AthenaUtils::DBConnect({
+	INSTANCE => 'TITAN',
+	SCHEMA => 'HYDRA',
+});
 
+my $currentbuild = Hydra::Schedule::GetLatestBuild($dbh);
+
+my @upcomingbuilds = Hydra::Schedule::GetUpcomingBuilds($dbh,{
+	INCLUDEMONTHLY => 1,
+});
+
+my $today = AthenaDate::Today();
+my @dates = AthenaDate::ListDates(AthenaDate::AddDays($today,-6),$today);
+
+$html .= qq{
+					<tr>
+						<th colspan='3'>Class Type</th>
+						<th colspan='10'>Prod</th>
+						<th colspan='10'>$upcomingbuilds[0]->{BUILD}</th>
+						<th colspan='10'>$upcomingbuilds[2]->{BUILD}</th>
+						<th colspan='10'>$upcomingbuilds[4]->{BUILD}</th>
+						<th colspan='10'>$upcomingbuilds[6]->{BUILD}</th>
+					</tr>
+					<tr>
+						<td colspan='3'></td>
+			};
+
+$html .= qq{
+                        <td colspan='1'> T </td>
+                        <td colspan='1'>T-1</td>
+                        <td colspan='1'>T-2</td>
+                        <td colspan='1'>T-3</td>
+                        <td colspan='1'>T-4</td>
+                        <td colspan='1'>T-5</td>
+                        <td colspan='1'>T-6</td>
+                        <td colspan='3'></td>
+} x 5;
+
+
+	
 print $html;
