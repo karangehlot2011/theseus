@@ -4,7 +4,7 @@ use warnings;
 
 no warnings 'uninitialized';
 
-use Athena ::Lib qw/:athena :intranet/;
+use Athena::Lib qw/:athena :intranet/;
 use AthenaUtils;
 
 
@@ -24,7 +24,7 @@ my $html = qq{
 	            	font-family: Century Gothic;
 	            	width: 90%;
 	            	border-collapse: collapse;
-	            	border-spacing: 0;
+	            	border-spacing: 1px;
 	            }
 
 	            .showtable table,th,td {
@@ -42,11 +42,12 @@ my $html = qq{
 	            }
 
 	            .showtable td{
-	            	border: 1px solid transparent;
+	            	border: 1px solid opaque;
 	            	height: 30px;
 	            	transition: all 0.3s;
 	            	background: #FAFAFA;
 	            	text-align: center;
+	            	color: black;
 	            }
 
 	            .showtable #project {
@@ -88,6 +89,17 @@ my $html = qq{
 				<button type='button'>Click Me!</button>
 			</div>
 			<div class='showtable' align='center'>
+				<table class='showtable'>
+					<tr>
+						<th>Test</th>
+						<th> Long test</th>
+					</tr>
+					<tr>
+						<td>This is </td>
+						<td> again a long test</td>
+					</tr>
+				</table>
+			</div>
 		</body>
 	</html>
 };
