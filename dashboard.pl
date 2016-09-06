@@ -18,20 +18,24 @@ my $html = qq{
 	        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	        <script>
 	        	jQuery(document).ready(function() {
-	        		jQuery("button").click(function() {
+	        		jQuery("#result").click(function() {
 	        			jQuery("#tohide").hide();
+	        			jQuery('#result').hide();
 	        		});
 	        	});
+
 	        </script>
 
 		</head>
 		<body> 
 			<p id='heading'> Theseus Metrics </p>
-			<button>Click me to hide the hide paragraph.</button>
 			<p id="tohide"> This is to hide</p>
-
-
+			<div align='center' id='result'>
+				<button type='button'>Click Me!</button>
+			</div>
 		</body>
+	</html>
 };
+
 
 print $html;
