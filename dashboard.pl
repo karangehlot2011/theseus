@@ -101,15 +101,24 @@ my $dbh = AthenaUtils::DBConnect({
 	SCHEMA => 'HYDRA',
 });
 
-my $currentbuild = Hydra::Schedule::GetLatestBuild($dbh);
+# Theseus DB handler
+my $theseusdbh = AthenaUtils::DBConnect({
+	INSTANCE => 'TITAN',
+	SCHEMA => 'THESEUS',
+});
 
+# Geting the current build and upcoming builds.
+my $currentbuild = Hydra::Schedule::GetLatestBuild($dbh);
 my @upcomingbuilds = Hydra::Schedule::GetUpcomingBuilds($dbh,{
 	INCLUDEMONTHLY => 1,
 });
 
+# Getting the today's date and the dates in the 
+# last week.
 my $today = AthenaDate::Today();
 my @dates = AthenaDate::ListDates(AthenaDate::AddDays($today,-6),$today);
 
+# Adding the upcoming build columns.
 $html .= qq{
 					<tr>
 						<th colspan='3'>Class Type</th>
@@ -120,9 +129,13 @@ $html .= qq{
 						<th colspan='10'>$upcomingbuilds[6]->{BUILD}</th>
 					</tr>
 					<tr>
+						<td colspan='53'>No. of tests executed in the last week</td>
+					</tr>
+					<tr>
 						<td colspan='3'></td>
 			};
 
+# Adding the T, T-6 columns to the table.
 $html .= qq{
                         <td colspan='1'> T </td>
                         <td colspan='1'>T-1</td>
@@ -134,6 +147,25 @@ $html .= qq{
                         <td colspan='3'></td>
 } x 5;
 
+# Getting the data from the execution table.
+# Using hte foreach loops to get  the data.
 
-	
+my @branchids = SQLColumnValues("select id from branch",$theseusdbh);
+foreach my $branch (@branchids) {
+	foreach (1..7) {
+		my $prev = $_ - 1;
+		my $sql = "select count(execution.id) total from execution,branch where branch.id = execution.branchid and branch.id = $branch and execution.created > sysdate - $_ and execution.created < sysdate - $prev";
+		my ($value) = SQLValues($sql,$theseusdbh);
+
+		# Appending the html content to incorporate
+		# the number in the table.	
+	}
+
+}
+
+
+$html .= qq{
+					</tr>
+
+};	
 print $html;
