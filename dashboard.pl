@@ -33,6 +33,7 @@ my $html = qq{
 	            .showtable table,th,td {
 	            	text-align: center;
 	            	font-size: 20px;
+	            	border: 1px solid black;
 	            }
 
 	            .showtable th{
@@ -122,14 +123,14 @@ my @dates = AthenaDate::ListDates(AthenaDate::AddDays($today,-6),$today);
 $html .= qq{
 					<tr>
 						<th colspan='3'>Class Type</th>
-						<th colspan='20'>Prod</th>
-						<th colspan='20'>$upcomingbuilds[0]->{BUILD}</th>
-						<th colspan='20'>$upcomingbuilds[2]->{BUILD}</th>
-						<th colspan='20'>$upcomingbuilds[4]->{BUILD}</th>
-						<th colspan='20'>$upcomingbuilds[6]->{BUILD}</th>
+						<th colspan='14'>Prod</th>
+						<th colspan='14'>$upcomingbuilds[0]->{BUILD}</th>
+						<th colspan='14'>$upcomingbuilds[2]->{BUILD}</th>
+						<th colspan='14'>$upcomingbuilds[4]->{BUILD}</th>
+						<th colspan='14'>$upcomingbuilds[6]->{BUILD}</th>
 					</tr>
 					<tr>
-						<td colspan='103'>No. of tests executed in the last week</td>
+						<td colspan='59' text-align='left'>No. of tests executed in the last week</td>
 					</tr>
 					<tr>
 						<td colspan='3'></td>
@@ -144,7 +145,6 @@ $html .= qq{
                         <td colspan='2'>T-4</td>
                         <td colspan='2'>T-5</td>
                         <td colspan='2'>T-6</td>
-                        <td colspan='3'></td>
 } x 5;
 
 # Getting the data from the execution table.
