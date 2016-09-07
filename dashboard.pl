@@ -122,14 +122,14 @@ my @dates = AthenaDate::ListDates(AthenaDate::AddDays($today,-6),$today);
 $html .= qq{
 					<tr>
 						<th colspan='3'>Class Type</th>
-						<th colspan='10'>Prod</th>
-						<th colspan='10'>$upcomingbuilds[0]->{BUILD}</th>
-						<th colspan='10'>$upcomingbuilds[2]->{BUILD}</th>
-						<th colspan='10'>$upcomingbuilds[4]->{BUILD}</th>
-						<th colspan='10'>$upcomingbuilds[6]->{BUILD}</th>
+						<th colspan='20'>Prod</th>
+						<th colspan='20'>$upcomingbuilds[0]->{BUILD}</th>
+						<th colspan='20'>$upcomingbuilds[2]->{BUILD}</th>
+						<th colspan='20'>$upcomingbuilds[4]->{BUILD}</th>
+						<th colspan='20'>$upcomingbuilds[6]->{BUILD}</th>
 					</tr>
 					<tr>
-						<td colspan='53'>No. of tests executed in the last week</td>
+						<td colspan='103'>No. of tests executed in the last week</td>
 					</tr>
 					<tr>
 						<td colspan='3'></td>
@@ -137,35 +137,57 @@ $html .= qq{
 
 # Adding the T, T-6 columns to the table.
 $html .= qq{
-                        <td colspan='1'> T </td>
-                        <td colspan='1'>T-1</td>
-                        <td colspan='1'>T-2</td>
-                        <td colspan='1'>T-3</td>
-                        <td colspan='1'>T-4</td>
-                        <td colspan='1'>T-5</td>
-                        <td colspan='1'>T-6</td>
+                        <td colspan='2'> T </td>
+                        <td colspan='2'>T-1</td>
+                        <td colspan='2'>T-2</td>
+                        <td colspan='2'>T-3</td>
+                        <td colspan='2'>T-4</td>
+                        <td colspan='2'>T-5</td>
+                        <td colspan='2'>T-6</td>
                         <td colspan='3'></td>
 } x 5;
 
 # Getting the data from the execution table.
 # Using hte foreach loops to get  the data.
-
+my @testspecs = SQLTableHash("select distinct class from testspec",$theseusdbh);
 my @branchids = SQLColumnValues("select id from branch",$theseusdbh);
-foreach my $branch (@branchids) {
-	foreach (1..7) {
+
+foreach my $testspec (@testspecs) {
+	$html .= qq{
+					</tr>
+					<tr>
+						<td colspan='3'>$testspec->{CLASS}</td>
+
+	};
+	foreach my $branch (@branchids) {
+		foreach (1..7) {
+
+		# This will sequentially generate the result for the 
+		# branches and the date sysdate, sysdate -1..till sysdate - 6..
+		# with the branches following the order from the table branch.
+		# The approach is to add the details sequentially to the html 
+		# content.
 		my $prev = $_ - 1;
-		my $sql = "select count(execution.id) total from execution,branch where branch.id = execution.branchid and branch.id = $branch and execution.created > sysdate - $_ and execution.created < sysdate - $prev";
-		my ($value) = SQLValues($sql,$theseusdbh);
+		my $sql = "select count(execution.id) total, testspec.class from execution,branch,testspec where branch.id = execution.branchid and branch.id = $branch and testspec.class = '$testspec->{CLASS}' and execution.created > sysdate - $_ and testspec.id = execution.testspecid  and execution.created < sysdate - $prev group by testspec.class  order by testspec.class";
+		my @result = SQLTableHash($sql,$theseusdbh);
 
-		# Appending the html content to incorporate
-		# the number in the table.	
+			# Appending the html content to incorporate
+			# the number in the table.
+			foreach my $result (@result) {
+				$html .= qq{
+								<td colspan='2'>$result->{TOTAL}</td>
+				};
+			}
+		}
 	}
-
 }
 
 
 $html .= qq{
 					</tr>
-
+				</table>
+			</body>
+		<html>
 };	
+
 print $html;
