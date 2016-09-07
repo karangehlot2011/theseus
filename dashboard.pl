@@ -130,7 +130,7 @@ $html .= qq{
 						<th colspan='14'>$upcomingbuilds[6]->{BUILD}</th>
 					</tr>
 					<tr>
-						<td colspan='59' text-align='left'>No. of tests executed in the last week</td>
+						<td colspan='73' text-align='left'>No. of tests executed in the last week</td>
 					</tr>
 					<tr>
 						<td colspan='3'></td>
